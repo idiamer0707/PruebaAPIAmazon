@@ -1,6 +1,6 @@
 const clientId = '486dd899-24fd-45ff-9f14-aab90454cbd1'; 
 const redirectUri = 'https://idiamer0707.github.io/PruebaAPIAmazon/'; 
-const tokenUrl = 'https://api.musicapi.com/oauth2/token';
+const tokenUrl = 'https://api.musicapi.com/oauth2/authorize';
 let accessToken = '';
 
 document.getElementById('loguin').addEventListener('click', () => {
