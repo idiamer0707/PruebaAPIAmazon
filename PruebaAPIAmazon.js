@@ -1,63 +1,59 @@
-const clientId = '486dd899-24fd-45ff-9f14-aab90454cbd1'; 
-const redirectUri = 'https://idiamer0707.github.io/PruebaAPIAmazon/'; 
-const tokenUrl = 'https://api.musicapi.com/oauth2/authorize';
-let accessToken = '';
 
-document.getElementById('loguin').addEventListener('click', () => {
-    const state = Math.random().toString(36).substring(7); 
-    const scope = 'metrics'; 
-    const authUrl = `https://api.musicapi.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&response_type=code`;
+const clientId = '486dd899-24fd-45ff-9f14-aab90454cbd1'; // Client ID
+const redirectUri = 'http://localhost:3000/callback'; 
+const apiUrl = 'https://api.musicapi.com';
 
-    
-    window.location.href = authUrl;
-});
-
-
-async function handleAuthCallback() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const authCode = urlParams.get('code');
-
-    if (authCode) {
-       
-        accessToken = await getAccessToken(authCode);
-        
-        getUserMetrics();
-    }
+function getAuthUrl() {
+    const scope = 'metrics'; // Define el alcance
+    const state = Math.random().toString(36).substring(7);
+    return `${apiUrl}/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&response_type=code`;
 }
 
+function loginUser() {
+    window.location.href = getAuthUrl();
+}
 
-async function getAccessToken(authCode) {
-    const response = await fetch(tokenUrl, {
+// Intercambiar código por token
+async function exchangeCodeForToken(authCode) {
+    const response = await fetch(`${apiUrl}/oauth2/token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `grant_type=authorization_code&client_id=${clientId}&client_secret=TU_CLIENT_SECRET&redirect_uri=${encodeURIComponent(redirectUri)}&code=${authCode}`,
+        body: `grant_type=authorization_code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${authCode}`
     });
-
     const data = await response.json();
-    return data.access_token; 
+    if (data.access_token) {
+        localStorage.setItem('access_token', data.access_token);
+        fetchMetrics(data.access_token);
+    } else {
+        console.error('Error obteniendo el token:', data);
+    }
 }
 
-
-async function getUserMetrics() {
-    const metricsUrl = 'https://api.musicapi.com/v1/user/metrics'; 
-
-    const response = await fetch(metricsUrl, {
+// Obtener métricas del usuario
+async function fetchMetrics(token) {
+    const response = await fetch(`${apiUrl}/user/metrics`, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${accessToken}`, 
+            'Authorization': `Bearer ${token}`,
         },
     });
-
-    const data = await response.json();
-
-    
-    document.getElementById('seguidores').textContent = `Seguidores: ${data.followers}`;
-    document.getElementById('image').src = data.profileImage || '';
+    const metrics = await response.json();
+    console.log('Métricas del usuario:', metrics);
+    displayMetrics(metrics);
 }
 
-
-if (window.location.search.includes('code')) {
-    handleAuthCallback();
+function displayMetrics(metrics) {
+    const metricsContainer = document.getElementById('metrics');
+    metricsContainer.innerHTML = JSON.stringify(metrics, null, 2);
 }
+
+// Procesar URL tras el login
+window.onload = () => {
+    const params = new URLSearchParams(window.location.search);
+    const authCode = params.get('code');
+    if (authCode) {
+        exchangeCodeForToken(authCode);
+    }
+};
