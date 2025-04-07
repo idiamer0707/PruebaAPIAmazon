@@ -1,6 +1,6 @@
 
 const clientId = '486dd899-24fd-45ff-9f14-aab90454cbd1'; // Client ID
-const redirectUri = 'http://localhost:3000/callback'; 
+const redirectUri = 'https://idiamer0707.github.io/PruebaAPIAmazon/'; 
 const apiUrl = 'https://api.musicapi.com';
 
 function getAuthUrl() {
