@@ -25,7 +25,7 @@ async function exchangeCodeForToken(authCode) {
     const data = await response.json();
     if (data.access_token) {
         localStorage.setItem('access_token', data.access_token);
-        fetchMetrics(data.access_token);
+        fetchMetrics('486dd899-24fd-45ff-9f14-aab90454cbd1');
     } else {
         console.error('Error obteniendo el token:', data);
     }
