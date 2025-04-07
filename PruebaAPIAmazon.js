@@ -1,19 +1,30 @@
-const myHeaders = new Headers();
-myHeaders.append("Accept", "application/json");
-myHeaders.append("Authorization", "DevToken eyJhbGciOi...");
+document.getElementById('subscriberForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Evitar que la página se recargue
 
-const requestOptions = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow"
-      
-document.getElementById('login').addEventListener('click', () => {
-    const url = "https://api.musicapi.com/api/123e4567-e89b-12d3-a456-426614174000/artists/987654321";
+    const authToken = document.getElementById('authToken').value;
+    const resultElement = document.getElementById('result');
+    
+    resultElement.textContent = "Cargando...";
 
-    fetch(url, requestOptions)
-        .then((response) => response.json()) // Cambia .text() a .json() si el resultado es JSON
-        .then((result) => console.log('Información del artista:', result))
-        .catch((error) => console.error('Error:', error));
+    try {
+        const response = await fetch('https://api.musicapi.com/v1/artist/subscribers', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        resultElement.textContent = `Número de suscriptores: ${data.subscribers}`;
+    } catch (error) {
+        resultElement.textContent = `Error al obtener datos: ${error.message}`;
+    }
 });
+
 
 
