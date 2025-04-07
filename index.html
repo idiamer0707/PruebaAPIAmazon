@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MusicAPI Frontend</title>
+    <title>MusicAPI Demo</title>
 </head>
 <body>
-    <h1>Bienvenido a MusicAPI</h1>
-    <button id="login">Login</button>
-    <div id="metrics"></div>
-    <script src="PruebaAPIAmazon.js"></script>
+    <h1>Bienvenido, Artista</h1>
+    <p>Introduce tu token de autenticación para ver el número de suscriptores.</p>
+    <form id="subscriberForm">
+        <input type="text" id="authToken" placeholder="Introduce tu Token" required>
+        <button type="submit">Obtener Suscriptores</button>
+    </form>
+    <p id="result"></p>
+    <script src="script.js"></script>
 </body>
 </html>
